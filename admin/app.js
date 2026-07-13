@@ -1,6 +1,6 @@
 // Azarine Admin Dashboard — Firebase Auth + API-Driven Logic
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 // Firebase web config (public, safe to expose)
 const firebaseConfig = {
@@ -20,61 +20,79 @@ let skinLeads = [];
 let newsLeads = [];
 let resellerLeads = [];
 let products = [];
+let dashboardInitialized = false;
+
+// Escape user-supplied values before injecting into innerHTML (prevents stored XSS)
+function esc(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+// Fetch wrapper that attaches the Firebase ID token (stateless auth, works on serverless)
+async function authFetch(url, options = {}) {
+    const user = auth.currentUser;
+    const headers = { ...(options.headers || {}) };
+    if (user) {
+        headers['Authorization'] = `Bearer ${await user.getIdToken()}`;
+    }
+    return fetch(url, { ...options, headers });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    checkAuth();
-});
-
-// --- Auth ---
-async function checkAuth() {
-    try {
-        const res = await fetch('/api/auth/me');
-        if (res.ok) {
+    // Firebase keeps the login persistent across reloads; react to auth state
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            showLogin();
+            return;
+        }
+        try {
+            const idToken = await user.getIdToken();
+            const res = await fetch('/api/auth/verify', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ idToken }),
+            });
             const data = await res.json();
-            showDashboard(data.user);
-        } else {
+            if (res.ok && data.success) {
+                showDashboard(data.user);
+            } else {
+                alert(data.error || 'Akses ditolak.');
+                await signOut(auth);
+                showLogin();
+            }
+        } catch (err) {
+            console.error('Auth check failed:', err);
             showLogin();
         }
-    } catch (err) {
-        console.error('Auth check failed:', err);
-        showLogin();
-    }
-}
+    });
+});
 
 function showLogin() {
     document.getElementById('login-gate').style.display = 'flex';
     document.getElementById('admin-layout').style.display = 'none';
 
-    // Bind Google Login button to Firebase signInWithPopup
     const loginBtn = document.getElementById('google-login-btn');
-    if (loginBtn) {
+    if (loginBtn && !loginBtn.dataset.bound) {
+        loginBtn.dataset.bound = '1';
+        const originalHTML = loginBtn.innerHTML;
         loginBtn.onclick = async () => {
             loginBtn.disabled = true;
             loginBtn.textContent = 'Memproses...';
             try {
-                const result = await signInWithPopup(auth, provider);
-                const idToken = await result.user.getIdToken();
-
-                // Send ID token to backend to create a session
-                const res = await fetch('/api/auth/verify', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ idToken }),
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    showDashboard(data.user);
-                } else {
-                    alert(data.error || 'Akses ditolak.');
-                    await signOut(auth);
-                }
+                await signInWithPopup(auth, provider);
+                // onAuthStateChanged handles verification + showing the dashboard
             } catch (err) {
                 console.error('Login error:', err);
-                alert('Login gagal. Silakan coba lagi.');
+                if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+                    alert('Login gagal. Silakan coba lagi.');
+                }
             } finally {
                 loginBtn.disabled = false;
-                loginBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 48 48">...</svg> Login dengan Google`;
+                loginBtn.innerHTML = originalHTML;
             }
         };
     }
@@ -90,12 +108,14 @@ function showDashboard(user) {
     }
     document.getElementById('user-name').textContent = user.name || user.email;
 
-    // Init
-    initSidebar();
-    initLogout();
+    if (!dashboardInitialized) {
+        dashboardInitialized = true;
+        initSidebar();
+        initLogout();
+        initProductModal();
+        initExportButtons();
+    }
     loadAllData();
-    initProductModal();
-    initExportButtons();
 }
 
 
@@ -140,9 +160,7 @@ function initSidebar() {
 function initLogout() {
     document.getElementById('btn-logout').addEventListener('click', async () => {
         try {
-            await fetch('/api/auth/logout', { method: 'POST' });
-            await signOut(auth); // Also clear Firebase Auth state
-            showLogin();
+            await signOut(auth); // onAuthStateChanged shows the login gate
         } catch (err) {
             console.error('Logout failed:', err);
             showLogin();
@@ -164,13 +182,14 @@ async function loadAllData() {
 // --- Skin Analyzer Leads ---
 async function loadSkinLeads() {
     try {
-        const res = await fetch('/api/leads/skin-analyze');
+        const res = await authFetch('/api/leads/skin-analyze');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         skinLeads = await res.json();
-        renderSkinLeads();
     } catch (err) {
         console.error('Failed to load skin leads:', err);
         skinLeads = [];
     }
+    renderSkinLeads();
 }
 
 function renderSkinLeads() {
@@ -189,14 +208,14 @@ function renderSkinLeads() {
         else if (score >= 50) scoreBadge = 'badge-score-med';
 
         return `<tr>
-            <td>${date}</td>
-            <td><strong>${lead.name}</strong></td>
-            <td>${lead.phone}</td>
-            <td>${lead.email || '-'}</td>
-            <td>${skinType}</td>
-            <td><span class="badge ${scoreBadge}">${score}/100</span></td>
-            <td><button class="btn-icon view" onclick="showSkinDetail('${lead.id}')" title="Lihat Detail"><i class="fa-solid fa-eye"></i></button></td>
-            <td><button class="btn-icon delete" onclick="deleteLead('skin-analyze','${lead.id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button></td>
+            <td>${esc(date)}</td>
+            <td><strong>${esc(lead.name)}</strong></td>
+            <td>${esc(lead.phone)}</td>
+            <td>${esc(lead.email || '-')}</td>
+            <td>${esc(skinType)}</td>
+            <td><span class="badge ${scoreBadge}">${esc(score)}/100</span></td>
+            <td><button class="btn-icon view" onclick="showSkinDetail('${esc(lead.id)}')" title="Lihat Detail"><i class="fa-solid fa-eye"></i></button></td>
+            <td><button class="btn-icon delete" onclick="deleteLead('skin-analyze','${esc(lead.id)}')" title="Hapus"><i class="fa-solid fa-trash"></i></button></td>
         </tr>`;
     }).join('');
 }
@@ -210,36 +229,36 @@ function showSkinDetail(id) {
 
     content.innerHTML = `
         <div class="skin-detail-grid">
-            <div class="skin-detail-item"><span class="dl">Jenis Kulit</span><div class="dv">${a.skinType || '-'}</div></div>
-            <div class="skin-detail-item"><span class="dl">Skor Kesehatan</span><div class="dv">${a.overallScore || 0}/100</div></div>
-            <div class="skin-detail-item"><span class="dl">Hidrasi</span><div class="dv">${a.hydrationLevel || '-'}</div></div>
-            <div class="skin-detail-item"><span class="dl">Ukuran Pori</span><div class="dv">${a.poreSize || '-'}</div></div>
-            <div class="skin-detail-item"><span class="dl">Jerawat</span><div class="dv">${a.acneSeverity || '-'}</div></div>
-            <div class="skin-detail-item"><span class="dl">Pigmentasi</span><div class="dv">${a.pigmentation || '-'}</div></div>
+            <div class="skin-detail-item"><span class="dl">Jenis Kulit</span><div class="dv">${esc(a.skinType || '-')}</div></div>
+            <div class="skin-detail-item"><span class="dl">Skor Kesehatan</span><div class="dv">${esc(a.overallScore || 0)}/100</div></div>
+            <div class="skin-detail-item"><span class="dl">Hidrasi</span><div class="dv">${esc(a.hydrationLevel || '-')}</div></div>
+            <div class="skin-detail-item"><span class="dl">Ukuran Pori</span><div class="dv">${esc(a.poreSize || '-')}</div></div>
+            <div class="skin-detail-item"><span class="dl">Jerawat</span><div class="dv">${esc(a.acneSeverity || '-')}</div></div>
+            <div class="skin-detail-item"><span class="dl">Pigmentasi</span><div class="dv">${esc(a.pigmentation || '-')}</div></div>
         </div>
         <div class="skin-detail-section">
             <h5>Kondisi Terdeteksi</h5>
-            <div>${(a.skinConditions || []).map(c => `<span class="skin-tag">${c}</span>`).join(' ')}</div>
+            <div>${(a.skinConditions || []).map(c => `<span class="skin-tag">${esc(c)}</span>`).join(' ')}</div>
         </div>
         <div class="skin-detail-section">
             <h5>Analisis Detail</h5>
-            <p>${a.detailedAnalysis || '-'}</p>
+            <p>${esc(a.detailedAnalysis || '-')}</p>
         </div>
         <div class="skin-detail-section">
             <h5>Rekomendasi Perawatan</h5>
-            <p>${a.recommendations || '-'}</p>
+            <p>${esc(a.recommendations || '-')}</p>
         </div>
         <div class="skin-detail-section">
             <h5>Tips Perawatan</h5>
-            <ul>${(a.skincareTips || []).map(t => `<li>${t}</li>`).join('')}</ul>
+            <ul>${(a.skincareTips || []).map(t => `<li>${esc(t)}</li>`).join('')}</ul>
         </div>
         <div class="skin-detail-section">
             <h5>Produk yang Direkomendasikan AI</h5>
-            <ul>${(a.recommendedProducts || []).map(p => `<li><strong>${p.productName}</strong> — ${p.reason}</li>`).join('')}</ul>
+            <ul>${(a.recommendedProducts || []).map(p => `<li><strong>${esc(p.productName)}</strong> — ${esc(p.reason)}</li>`).join('')}</ul>
         </div>
         <div style="margin-top:16px;padding:12px;background:#f8f9fa;border-radius:8px;font-size:12px;color:#8d9296;">
-            <strong>Kontak:</strong> ${lead.name} | ${lead.phone} | ${lead.email || '-'}<br>
-            <strong>Tanggal:</strong> ${new Date(lead.createdAt).toLocaleString('id-ID')}
+            <strong>Kontak:</strong> ${esc(lead.name)} | ${esc(lead.phone)} | ${esc(lead.email || '-')}<br>
+            <strong>Tanggal:</strong> ${esc(new Date(lead.createdAt).toLocaleString('id-ID'))}
         </div>
     `;
 
@@ -249,13 +268,14 @@ function showSkinDetail(id) {
 // --- Newsletter Leads ---
 async function loadNewsLeads() {
     try {
-        const res = await fetch('/api/leads/newsletter');
+        const res = await authFetch('/api/leads/newsletter');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         newsLeads = await res.json();
-        renderNewsLeads();
     } catch (err) {
         console.error('Failed to load newsletter leads:', err);
         newsLeads = [];
     }
+    renderNewsLeads();
 }
 
 function renderNewsLeads() {
@@ -268,10 +288,10 @@ function renderNewsLeads() {
     tbody.innerHTML = newsLeads.map(lead => {
         const date = new Date(lead.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
         return `<tr>
-            <td>${date}</td>
-            <td><strong>${lead.name}</strong></td>
-            <td>${lead.email}</td>
-            <td><button class="btn-icon delete" onclick="deleteLead('newsletter','${lead.id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button></td>
+            <td>${esc(date)}</td>
+            <td><strong>${esc(lead.name)}</strong></td>
+            <td>${esc(lead.email)}</td>
+            <td><button class="btn-icon delete" onclick="deleteLead('newsletter','${esc(lead.id)}')" title="Hapus"><i class="fa-solid fa-trash"></i></button></td>
         </tr>`;
     }).join('');
 }
@@ -279,13 +299,14 @@ function renderNewsLeads() {
 // --- Reseller Leads ---
 async function loadResellerLeads() {
     try {
-        const res = await fetch('/api/leads/reseller');
+        const res = await authFetch('/api/leads/reseller');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         resellerLeads = await res.json();
-        renderResellerLeads();
     } catch (err) {
         console.error('Failed to load reseller leads:', err);
         resellerLeads = [];
     }
+    renderResellerLeads();
 }
 
 function renderResellerLeads() {
@@ -298,12 +319,12 @@ function renderResellerLeads() {
     tbody.innerHTML = resellerLeads.map(lead => {
         const date = new Date(lead.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
         return `<tr>
-            <td>${date}</td>
-            <td><strong>${lead.name}</strong></td>
-            <td>${lead.phone}</td>
-            <td>${lead.city || '-'}</td>
-            <td>${lead.message || '-'}</td>
-            <td><button class="btn-icon delete" onclick="deleteLead('reseller','${lead.id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button></td>
+            <td>${esc(date)}</td>
+            <td><strong>${esc(lead.name)}</strong></td>
+            <td>${esc(lead.phone)}</td>
+            <td>${esc(lead.city || '-')}</td>
+            <td>${esc(lead.message || '-')}</td>
+            <td><button class="btn-icon delete" onclick="deleteLead('reseller','${esc(lead.id)}')" title="Hapus"><i class="fa-solid fa-trash"></i></button></td>
         </tr>`;
     }).join('');
 }
@@ -312,9 +333,12 @@ function renderResellerLeads() {
 async function deleteLead(collection, id) {
     if (!confirm('Yakin ingin menghapus data ini?')) return;
     try {
-        const res = await fetch(`/api/leads/${collection}/${id}`, { method: 'DELETE' });
+        const res = await authFetch(`/api/leads/${collection}/${id}`, { method: 'DELETE' });
         if (res.ok) {
             await loadAllData();
+        } else {
+            const err = await res.json().catch(() => ({}));
+            alert(err.error || 'Gagal menghapus data.');
         }
     } catch (err) {
         console.error('Delete failed:', err);
@@ -326,12 +350,13 @@ async function deleteLead(collection, id) {
 async function loadProducts() {
     try {
         const res = await fetch('/api/products');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         products = await res.json();
-        renderProducts();
     } catch (err) {
         console.error('Failed to load products:', err);
         products = [];
     }
+    renderProducts();
 }
 
 function renderProducts() {
@@ -347,15 +372,15 @@ function renderProducts() {
     tbody.innerHTML = products.map(p => {
         const skinTypesStr = (p.skinTypes || []).join(', ') || '-';
         return `<tr>
-            <td><img src="${p.imageUrl || 'https://placehold.co/48x48/faf8f5/0b3d2c?text=N'}" class="product-thumb" alt="${p.name}"></td>
-            <td><strong>${p.name}</strong><br><span style="font-size:12px;color:#8d9296;">${p.tag || ''}</span></td>
-            <td><span class="badge" style="background:var(--primary-subtle);color:var(--primary);">${p.category}</span></td>
-            <td>${p.price}</td>
-            <td>⭐ ${p.rating || 0}</td>
-            <td style="font-size:12px;">${skinTypesStr}</td>
+            <td><img src="${esc(p.imageUrl || 'https://placehold.co/48x48/faf8f5/0b3d2c?text=N')}" class="product-thumb" alt="${esc(p.name)}"></td>
+            <td><strong>${esc(p.name)}</strong><br><span style="font-size:12px;color:#8d9296;">${esc(p.tag || '')}</span></td>
+            <td><span class="badge" style="background:var(--primary-subtle);color:var(--primary);">${esc(p.category)}</span></td>
+            <td>${esc(p.price)}</td>
+            <td>⭐ ${esc(p.rating || 0)}</td>
+            <td style="font-size:12px;">${esc(skinTypesStr)}</td>
             <td>
-                <button class="btn-icon edit" onclick="editProduct('${p.id}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
-                <button class="btn-icon delete" onclick="deleteProduct('${p.id}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn-icon edit" onclick="editProduct('${esc(p.id)}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-icon delete" onclick="deleteProduct('${esc(p.id)}')" title="Hapus"><i class="fa-solid fa-trash"></i></button>
             </td>
         </tr>`;
     }).join('');
@@ -405,7 +430,7 @@ function initProductModal() {
         try {
             const url = id ? `/api/products/${id}` : '/api/products';
             const method = id ? 'PUT' : 'POST';
-            const res = await fetch(url, {
+            const res = await authFetch(url, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
@@ -415,7 +440,7 @@ function initProductModal() {
                 await loadProducts();
                 updateDashboardStats();
             } else {
-                const err = await res.json();
+                const err = await res.json().catch(() => ({}));
                 alert(err.error || 'Gagal menyimpan produk.');
             }
         } catch (err) {
@@ -455,10 +480,13 @@ function editProduct(id) {
 async function deleteProduct(id) {
     if (!confirm('Yakin ingin menghapus produk ini? Produk yang dihapus tidak dapat dikembalikan.')) return;
     try {
-        const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+        const res = await authFetch(`/api/products/${id}`, { method: 'DELETE' });
         if (res.ok) {
             await loadProducts();
             updateDashboardStats();
+        } else {
+            const err = await res.json().catch(() => ({}));
+            alert(err.error || 'Gagal menghapus produk.');
         }
     } catch (err) {
         console.error('Delete product failed:', err);
@@ -533,7 +561,7 @@ function exportCSV(target) {
                 l.email || '',
                 l.analysis?.skinType || '',
                 l.analysis?.overallScore || 0,
-                (l.analysis?.detailedAnalysis || '').replace(/"/g, '""'),
+                l.analysis?.detailedAnalysis || '',
             ]);
         });
     } else if (target === 'newsletter') {
@@ -543,10 +571,10 @@ function exportCSV(target) {
     } else if (target === 'reseller') {
         filename = 'leads_reseller.csv';
         rows.push(['Tanggal', 'Nama', 'WhatsApp', 'Kota', 'Pesan']);
-        resellerLeads.forEach(l => rows.push([l.createdAt, l.name, l.phone, l.city || '', (l.message || '').replace(/"/g, '""')]));
+        resellerLeads.forEach(l => rows.push([l.createdAt, l.name, l.phone, l.city || '', l.message || '']));
     }
 
-    const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+    const csv = rows.map(r => r.map(c => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
     const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -555,3 +583,11 @@ function exportCSV(target) {
     a.click();
     URL.revokeObjectURL(url);
 }
+
+// Expose handlers used by inline onclick attributes (this file is an ES module,
+// so top-level functions are NOT global by default — without this, every
+// Detail/Edit/Hapus button throws ReferenceError)
+window.showSkinDetail = showSkinDetail;
+window.deleteLead = deleteLead;
+window.editProduct = editProduct;
+window.deleteProduct = deleteProduct;
