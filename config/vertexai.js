@@ -1,4 +1,5 @@
 const { GoogleGenAI } = require('@google/genai');
+const { envValue } = require('./firebase');
 
 // Initialize the GenAI client using Vertex AI configuration from environment variables.
 // Falls back to the Firebase service account if no dedicated VERTEXAI_* creds are set
@@ -8,11 +9,10 @@ let genaiClient = null;
 function getGenAIClient() {
     if (genaiClient) return genaiClient;
 
-    const projectId = process.env.VERTEXAI_PROJECT_ID || process.env.FIREBASE_PROJECT_ID;
-    const location = process.env.VERTEXAI_LOCATION || 'us-central1';
-    const clientEmail = process.env.VERTEXAI_CLIENT_EMAIL || process.env.FIREBASE_CLIENT_EMAIL;
-    const rawKey = process.env.VERTEXAI_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY;
-    const privateKey = rawKey ? rawKey.replace(/\\n/g, '\n') : undefined;
+    const projectId = envValue('VERTEXAI_PROJECT_ID') || envValue('FIREBASE_PROJECT_ID');
+    const location = envValue('VERTEXAI_LOCATION') || 'us-central1';
+    const clientEmail = envValue('VERTEXAI_CLIENT_EMAIL') || envValue('FIREBASE_CLIENT_EMAIL');
+    const privateKey = envValue('VERTEXAI_PRIVATE_KEY') || envValue('FIREBASE_PRIVATE_KEY');
 
     if (!projectId || !clientEmail || !privateKey) {
         throw new Error(
