@@ -1,34 +1,24 @@
 const { GoogleGenAI } = require('@google/genai');
-const { GoogleAuth } = require('google-auth-library');
-const path = require('path');
 
-const SA_KEY_PATH = path.join(__dirname, 'vertexai-sa.json');
-
-// Use Google Auth to get an access token from the service account
-async function getAccessToken() {
-    const auth = new GoogleAuth({
-        keyFilename: SA_KEY_PATH,
-        scopes: ['https://www.googleapis.com/auth/cloud-platform'],
-    });
-    const client = await auth.getClient();
-    const tokenResponse = await client.getAccessToken();
-    return tokenResponse.token;
-}
-
-// Initialize the GenAI client using Vertex AI backend
+// Initialize the GenAI client using Vertex AI configuration from environment variables
 let genaiClient = null;
 
 async function getGenAIClient() {
     if (genaiClient) return genaiClient;
 
-    const saKey = require(SA_KEY_PATH);
-    
+    const projectId = process.env.VERTEXAI_PROJECT_ID || 'blackstone-new';
+    const clientEmail = process.env.VERTEXAI_CLIENT_EMAIL;
+    const privateKey = process.env.VERTEXAI_PRIVATE_KEY ? process.env.VERTEXAI_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined;
+
     genaiClient = new GoogleGenAI({
         vertexai: true,
-        project: saKey.project_id,
+        project: projectId,
         location: 'us-central1',
         googleAuthOptions: {
-            keyFilename: SA_KEY_PATH,
+            credentials: {
+                client_email: clientEmail,
+                private_key: privateKey,
+            },
             scopes: ['https://www.googleapis.com/auth/cloud-platform'],
         },
     });
