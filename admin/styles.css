@@ -107,6 +107,8 @@ body {
     background-color: var(--primary);
     color: #ffffff;
     border-left: 4px solid var(--secondary);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 .sidebar-footer {
@@ -438,18 +440,19 @@ body {
     .sidebar {
         width: 70px;
     }
-    .sidebar .logo, .sidebar-menu span, .sidebar-footer span, .btn-back-home span {
+    .sidebar .logo, .sidebar span {
         display: none;
     }
     .main-content {
         margin-left: 70px;
     }
-    .menu-item a span {
-        display: none;
+    .menu-item a {
+        justify-content: center;
+        padding: 12px 0;
     }
     .sidebar-menu a i {
         font-size: 18px;
-        margin: 0 auto;
+        margin: 0;
     }
     .dashboard-widgets {
         grid-template-columns: 1fr;
