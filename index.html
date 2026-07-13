@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azarine Cosmetic - Skincare Herbal Bersertifikat Halal & BPOM</title>
+    <meta name="description" content="Temukan rahasia kulit sehat alami bersama Azarine Cosmetic. Skincare herbal bersertifikat BPOM, Halal MUI, ISO, dan CPKB sejak 2002. Ikuti Skin Quiz untuk rekomendasi produk terbaik.">
+    <link rel="stylesheet" href="styles.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container header-container">
+            <a href="#" class="logo">Azarine<span>.</span></a>
+            
+            <nav id="nav-menu">
+                <ul class="nav-links">
+                    <li><a href="#hero">Beranda</a></li>
+                    <li><a href="#quiz">Skin Quiz</a></li>
+                    <li><a href="#catalog">Katalog Produk</a></li>
+                    <li><a href="#testimonials">Testimoni</a></li>
+                    <li><a href="#reseller">Mitra Reseller</a></li>
+                </ul>
+                <a href="#quiz" class="btn btn-primary nav-cta">Mulai Skin Quiz</a>
+            </nav>
+            
+            <div class="menu-toggle" id="mobile-menu-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <span class="badge-new">
+                    <i class="fa-solid fa-award"></i> Pemenang C&T Allē Awards 2026
+                </span>
+                <h1 class="hero-title">Skincare Herbal<br>Pilihan <span>Kulit Sehatmu</span></h1>
+                <p class="hero-description">Sejak 2002, Azarine menghadirkan produk perawatan kulit berbahan alami pilihan, bersertifikat lengkap, dan diformulasikan khusus untuk kulit tropis Indonesia.</p>
+                <div class="hero-ctas">
+                    <a href="#quiz" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Temukan Skincare Kamu</a>
+                    <a href="#catalog" class="btn btn-outline">Lihat Katalog</a>
+                </div>
+            </div>
+            
+            <div class="hero-image-container">
+                <div class="hero-image-bg"></div>
+                <!-- Sunscreen image generated for mock display -->
+                <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80" alt="Azarine Hero Products" class="hero-img">
+                
+                <div class="hero-floating-card card-1">
+                    <div class="fc-icon"><i class="fa-solid fa-leaf"></i></div>
+                    <div class="fc-text">
+                        <h5>100% Herbal Alami</h5>
+                        <p>Aman untuk kulit sensitif</p>
+                    </div>
+                </div>
+                
+                <div class="hero-floating-card card-2">
+                    <div class="fc-icon"><i class="fa-solid fa-shield-halal"></i></div>
+                    <div class="fc-text">
+                        <h5>Sertifikasi Lengkap</h5>
+                        <p>Halal MUI, BPOM, CPKB</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust Bar -->
+    <section class="trust-bar">
+        <div class="container trust-container">
+            <div class="trust-item">
+                <i class="fa-solid fa-circle-check"></i>
+                <span class="trust-text">TERDAFTAR BPOM RI</span>
+            </div>
+            <div class="trust-item">
+                <i class="fa-solid fa-heart"></i>
+                <span class="trust-text">HALAL MUI</span>
+            </div>
+            <div class="trust-item">
+                <i class="fa-solid fa-certificate"></i>
+                <span class="trust-text">SERTIFIKAT ISO 22716</span>
+            </div>
+            <div class="trust-item">
+                <i class="fa-solid fa-flask"></i>
+                <span class="trust-text">TERUJI SECARA DERMATOLOGIS</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skin Quiz Section -->
+    <section class="section quiz-section" id="quiz">
+        <div class="container">
+            <div class="section-title-wrapper">
+                <span class="section-subtitle">Skin Quiz</span>
+                <h2 class="section-title">Temukan Solusi Kulit dalam 1 Menit</h2>
+                <p class="section-desc">Jawab beberapa pertanyaan singkat dan dapatkan rekomendasi produk Azarine yang dirancang khusus untuk kondisi kulit unik Anda.</p>
+            </div>
+            
+            <div class="quiz-container-box">
+                <div class="quiz-header">
+                    <h3 id="quiz-step-title">Pertanyaan 1</h3>
+                    <span class="quiz-progress" id="quiz-progress-text">1 dari 4</span>
+                </div>
+                <div class="quiz-progress-bar-wrapper">
+                    <div class="quiz-progress-bar" id="quiz-progress-bar"></div>
+                </div>
+                
+                <div class="quiz-body">
+                    <!-- Step 1: Skin Type -->
+                    <div class="quiz-slide active" data-step="1">
+                        <p class="quiz-question">Bagaimana kondisi kulit wajah Anda biasanya di siang hari?</p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="oily">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Sangat berminyak dan mengkilap</span>
+                            </div>
+                            <div class="quiz-option" data-value="dry">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Kering, terasa kencang, atau bersisik</span>
+                            </div>
+                            <div class="quiz-option" data-value="sensitive">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Mudah memerah, gatal, atau perih</span>
+                            </div>
+                            <div class="quiz-option" data-value="acne">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Berminyak di area T-zone dengan jerawat</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Main Concern -->
+                    <div class="quiz-slide" data-step="2">
+                        <p class="quiz-question">Apa masalah kulit utama yang paling ingin Anda atasi?</p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="acne-care">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Jerawat aktif dan bekas jerawat kemerahan</span>
+                            </div>
+                            <div class="quiz-option" data-value="brightening">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Kusam, warna kulit tidak merata, flek hitam</span>
+                            </div>
+                            <div class="quiz-option" data-value="hydration">
+                                <span class="quiz-option-theme"></span>
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Dehidrasi, kerutan halus, dan kulit kasar</span>
+                            </div>
+                            <div class="quiz-option" data-value="sun-protection">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Perlindungan dari sinar matahari & polusi</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Skin Goal -->
+                    <div class="quiz-slide" data-step="3">
+                        <p class="quiz-question">Apa target utama yang ingin Anda capai untuk kulit Anda?</p>
+                        <div class="quiz-options">
+                            <div class="quiz-option" data-value="glow">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Kulit cerah merona & glowing alami</span>
+                            </div>
+                            <div class="quiz-option" data-value="calm">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Kulit bebas jerawat, kemerahan mereda</span>
+                            </div>
+                            <div class="quiz-option" data-value="plump">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Kulit kenyal, lembap sepanjang hari</span>
+                            </div>
+                            <div class="quiz-option" data-value="barrier">
+                                <span class="quiz-option-radio"></span>
+                                <span class="quiz-option-text">Skin barrier kuat dan tidak gampang iritasi</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Lead Capture -->
+                    <div class="quiz-slide" data-step="4">
+                        <p class="quiz-question">Dapatkan Hasil & Klaim Voucher Diskon 15%</p>
+                        <div class="quiz-form">
+                            <div class="form-group">
+                                <label for="quiz-name">Nama Lengkap</label>
+                                <input type="text" id="quiz-name" class="form-input" placeholder="Masukkan nama Anda" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quiz-phone">Nomor WhatsApp / HP</label>
+                                <input type="tel" id="quiz-phone" class="form-input" placeholder="Contoh: 081234567890" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="quiz-email">Alamat Email</label>
+                                <input type="email" id="quiz-email" class="form-input" placeholder="Contoh: nama@domain.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-checkbox">
+                                    <input type="checkbox" id="quiz-consent" required checked>
+                                    Saya menyetujui kebijakan privasi pengumpulan data untuk konsultasi dan informasi produk.
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Recommendations Result -->
+                    <div class="quiz-slide" data-step="5" id="quiz-result-slide">
+                        <div class="quiz-results-wrapper">
+                            <span class="skin-badge-result" id="skin-type-result">KULIT BERMINYAK / ACNE-PRONE</span>
+                            <h3>Rekomendasi Produk Terbaik Untukmu:</h3>
+                            <p class="section-desc" style="margin-bottom: 24px;">Berdasarkan profil kulitmu, berikut adalah langkah perawatan yang direkomendasikan:</p>
+                            
+                            <div class="result-products-grid" id="recommended-products-container">
+                                <!-- Generated Dynamically -->
+                            </div>
+                            
+                            <div style="margin-top: 36px; display: flex; gap: 16px; justify-content: center;">
+                                <a href="https://wa.me/6281234567890?text=Halo%20Azarine,%20saya%20ingin%20konsultasi%20skincare" class="btn btn-secondary" target="_blank"><i class="fa-brands fa-whatsapp"></i> Chat Konsultan Kulit</a>
+                                <button type="button" class="btn btn-outline" id="restart-quiz-btn"><i class="fa-solid fa-arrows-rotate"></i> Ulangi Kuis</button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                
+                <div class="quiz-footer" id="quiz-footer-buttons">
+                    <button type="button" class="btn btn-outline" id="quiz-prev-btn" style="visibility: hidden;"><i class="fa-solid fa-arrow-left"></i> Kembali</button>
+                    <button type="button" class="btn btn-primary" id="quiz-next-btn">Lanjut <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Catalog Section -->
+    <section class="section section-alt" id="catalog">
+        <div class="container">
+            <div class="section-title-wrapper">
+                <span class="section-subtitle">Koleksi Produk</span>
+                <h2 class="section-title">Solusi untuk Setiap Jenis Kulit</h2>
+                <p class="section-desc">Pilihan produk berkualitas tinggi yang dikelompokkan sesuai kebutuhan kulit Anda.</p>
+            </div>
+            
+            <div class="catalog-filters">
+                <button type="button" class="filter-btn active" data-filter="all">Semua Produk</button>
+                <button type="button" class="filter-btn" data-filter="sunscreen">Sunscreen</button>
+                <button type="button" class="filter-btn" data-filter="serum">Serum</button>
+                <button type="button" class="filter-btn" data-filter="moisturizer">Moisturizer</button>
+                <button type="button" class="filter-btn" data-filter="acne">Acne Care</button>
+            </div>
+            
+            <div class="product-grid" id="catalog-products-container">
+                <!-- Dynamically generated products -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials / Social Proof -->
+    <section class="section testimonials" id="testimonials">
+        <div class="container">
+            <div class="section-title-wrapper">
+                <span class="section-subtitle">Testimoni</span>
+                <h2 class="section-title">Apa Kata Mereka Tentang Azarine?</h2>
+                <p class="section-desc">Lebih dari ribuan pengguna telah membuktikan khasiat perawatan kulit Azarine.</p>
+            </div>
+            
+            <div class="testimonial-grid">
+                <div class="ba-section">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" alt="Brand Ambassador Dino of Seventeen" class="ba-img">
+                    <div class="ba-tag">
+                        <h4>DINO of SEVENTEEN</h4>
+                        <p>Global Brand Ambassador</p>
+                    </div>
+                </div>
+                
+                <div class="testimonials-list">
+                    <div class="testimonial-card">
+                        <div class="testi-header">
+                            <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80" alt="Reviewer" class="testi-avatar">
+                            <div class="testi-meta">
+                                <h4>Sarah Amelia</h4>
+                                <p>Kulit Kombinasi & Berminyak</p>
+                            </div>
+                            <div class="testi-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="testi-content">"Hydrasoothe Sunscreen Gel bener-bener holy grail aku! Teksturnya ringan kayak air, dingin pas dipakai, gampang meresap dan ga bikin kusam di muka berminyak aku. Ga heran viral banget!"</p>
+                    </div>
+                    
+                    <div class="testimonial-card">
+                        <div class="testi-header">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Reviewer" class="testi-avatar">
+                            <div class="testi-meta">
+                                <h4>Rian Hidayat</h4>
+                                <p>Kulit Berjerawat (Acne-prone)</p>
+                            </div>
+                            <div class="testi-stars">
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                                <i class="fa-solid fa-star"></i>
+                            </div>
+                        </div>
+                        <p class="testi-content">"Pakai Acne Spot Gel malam hari, besoknya jerawat langsung kalem dan kempes. Kandungan herbalnya ga bikin kulit kering terkelupas. Recommended banget buat cowok juga."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lead Form / Newsletter Section -->
+    <section class="section lead-form-section">
+        <div class="container lead-grid">
+            <div class="lead-info-box">
+                <span class="section-subtitle">Dapatkan Penawaran Khusus</span>
+                <h2>Gabung Newsletter & Dapatkan Voucher Belanja 15%</h2>
+                <p>Jadilah yang pertama tahu tentang produk baru, diskon eksklusif, serta tips perawatan kulit mingguan dari pakar dermatologi kami.</p>
+                <ul class="benefit-list">
+                    <li class="benefit-item"><i class="fa-solid fa-circle-check"></i> Diskon langsung 15% untuk pembelian pertama</li>
+                    <li class="benefit-item"><i class="fa-solid fa-circle-check"></i> Tips perawatan kulit berkala</li>
+                    <li class="benefit-item"><i class="fa-solid fa-circle-check"></i> Info launching produk terbaru gratis</li>
+                </ul>
+            </div>
+            
+            <div class="lead-form-card">
+                <form id="newsletter-form">
+                    <div class="form-group">
+                        <label for="news-name">Nama Lengkap</label>
+                        <input type="text" id="news-name" class="form-input" placeholder="Masukkan nama Anda" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="news-email">Alamat Email</label>
+                        <input type="email" id="news-email" class="form-input" placeholder="Contoh: nama@domain.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-checkbox">
+                            <input type="checkbox" id="news-consent" required checked>
+                            Saya bersedia menerima newsletter promosi & menyetujui kebijakan privasi.
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Klaim Voucher Sekarang</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reseller Section -->
+    <section class="section reseller-section" id="reseller">
+        <div class="container reseller-grid">
+            <div>
+                <span class="section-subtitle" style="color: var(--secondary);">Kemitraan Bisnis</span>
+                <h2>Bergabunglah Sebagai Reseller Azarine Cosmetic</h2>
+                <p style="margin-bottom: 32px; opacity: 0.9;">Dapatkan keuntungan margin tinggi, materi pemasaran lengkap, dan pelatihan intensif penjualan untuk membangun bisnis kecantikan Anda sendiri.</p>
+                
+                <div class="reseller-benefits">
+                    <div class="reseller-b-card">
+                        <h4>Keuntungan Hingga 35%</h4>
+                        <p>Margin harga produk yang sangat menarik untuk memaksimalkan keuntungan Anda.</p>
+                    </div>
+                    <div class="reseller-b-card">
+                        <h4>Materi Promosi Gratis</h4>
+                        <p>Kami siapkan foto produk, video review, hingga materi copywriter siap pakai.</p>
+                    </div>
+                    <div class="reseller-b-card">
+                        <h4>Pendaftaran Resmi</h4>
+                        <p>Mendapat sertifikat kemitraan resmi Azarine Cosmetic.</p>
+                    </div>
+                    <div class="reseller-b-card">
+                        <h4>Bimbingan Kelas Bisnis</h4>
+                        <p>Sesi webinar eksklusif tentang cara jualan online yang laris manis.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="reseller-form-card">
+                <h3>Formulir Mitra Reseller</h3>
+                <p>Isi data Anda untuk dihubungi oleh Tim Akuisisi Kemitraan kami.</p>
+                <form id="reseller-form">
+                    <div class="form-group">
+                        <label for="res-name">Nama Lengkap</label>
+                        <input type="text" id="res-name" class="form-input" placeholder="Masukkan nama lengkap Anda" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="res-phone">Nomor WhatsApp (Aktif)</label>
+                        <input type="tel" id="res-phone" class="form-input" placeholder="Contoh: 081234567890" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="res-city">Kota / Kabupaten</label>
+                        <input type="text" id="res-city" class="form-input" placeholder="Contoh: Surabaya" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="res-message">Mengapa Anda ingin bermitra dengan Azarine?</label>
+                        <textarea id="res-message" class="form-input" style="height: 100px; resize: none;" placeholder="Ceritakan singkat motivasi Anda..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-checkbox">
+                            <input type="checkbox" id="res-consent" required checked>
+                            Saya menyetujui bahwa data saya akan diproses untuk pendaftaran kemitraan reseller.
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-secondary" style="width: 100%; margin-top: 10px;">Kirim Pengajuan Kemitraan</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="logo">Azarine<span>.</span></a>
+                <p>Azarine Cosmetic berkomitmen untuk selalu menyediakan produk perawatan kulit terbaik berbahan alami, bersertifikat BPOM, Halal MUI, serta aman untuk penggunaan sehari-hari.</p>
+                <div class="footer-socials">
+                    <a href="https://instagram.com" class="social-icon" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://tiktok.com" class="social-icon" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
+                    <a href="https://facebook.com" class="social-icon" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://youtube.com" class="social-icon" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Navigasi</h4>
+                <ul class="footer-links">
+                    <li><a href="#hero">Beranda</a></li>
+                    <li><a href="#quiz">Skin Quiz</a></li>
+                    <li><a href="#catalog">Katalog Produk</a></li>
+                    <li><a href="#testimonials">Testimoni</a></li>
+                    <li><a href="#reseller">Mitra Reseller</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Kebijakan</h4>
+                <ul class="footer-links">
+                    <li><a href="privacy-policy.html">Kebijakan Privasi</a></li>
+                    <li><a href="#">Syarat & Ketentuan</a></li>
+                    <li><a href="/admin">Dashboard Admin (Demo)</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-col">
+                <h4>Hubungi Kami</h4>
+                <ul class="footer-links">
+                    <li><a href="mailto:info@azarinecosmetic.com"><i class="fa-solid fa-envelope"></i> info@azarinecosmetic.com</a></li>
+                    <li><a href="tel:+6231123456"><i class="fa-solid fa-phone"></i> +62 (31) 123-456</a></li>
+                    <li><a href="https://wa.me/6281234567890" target="_blank"><i class="fa-brands fa-whatsapp"></i> CS WhatsApp: 0812-3456-7890</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Azarine Cosmetic. All rights reserved. Made for lead-generation landing page demo.</p>
+            <div class="footer-badges">
+                <span class="footer-badge">BPOM RI APPROVED</span>
+                <span class="footer-badge">HALAL MUI</span>
+                <span class="footer-badge">ISO 22716</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal Product Detail -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal-content">
+            <button type="button" class="modal-close" id="modal-close-btn">&times;</button>
+            <div class="modal-grid">
+                <div class="modal-img-container">
+                    <img id="modal-product-img" src="" alt="Product Image">
+                </div>
+                <div class="modal-body">
+                    <span class="modal-tag" id="modal-product-tag">Tag</span>
+                    <h3 class="modal-title" id="modal-product-title">Product Title</h3>
+                    <p class="modal-price" id="modal-product-price">Rp 0</p>
+                    <p class="modal-desc" id="modal-product-desc">Product description goes here.</p>
+                    
+                    <div class="modal-details">
+                        <div class="modal-detail-item"><strong>Cara Pakai:</strong> <span id="modal-product-usage">Detail usage</span></div>
+                        <div class="modal-detail-item"><strong>Kandungan Utama:</strong> <span id="modal-product-ingredients">Ingredients list</span></div>
+                    </div>
+                    
+                    <a href="https://wa.me/6281234567890?text=Halo,%20saya%20tertarik%20dengan%20produk%20Azarine" class="btn btn-primary" id="modal-buy-btn" target="_blank"><i class="fa-brands fa-whatsapp"></i> Beli Lewat WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sticky WhatsApp Button -->
+    <a href="https://wa.me/6281234567890?text=Halo%20Azarine,%20saya%20ingin%20konsultasi%20skincare" class="whatsapp-float" target="_blank" title="Chat Customer Service WhatsApp">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="success-toast">
+        <span class="toast-success-icon"><i class="fa-solid fa-check"></i></span>
+        <span id="toast-message">Data berhasil terkirim! Terima kasih.</span>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

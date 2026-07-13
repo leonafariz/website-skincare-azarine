@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azarine Admin - Dashboard Leads & Analytics</title>
+    <!-- CSS styles specifically for dashboard -->
+    <link rel="stylesheet" href="styles.css">
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">Azarine<span>.</span>Admin</a>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="menu-item active" data-tab="dashboard">
+                    <a href="#"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+                </li>
+                <li class="menu-item" data-tab="quiz-leads">
+                    <a href="#"><i class="fa-solid fa-wand-magic-sparkles"></i> Leads Skin Quiz</a>
+                </li>
+                <li class="menu-item" data-tab="newsletter-leads">
+                    <a href="#"><i class="fa-solid fa-envelope"></i> Leads Newsletter</a>
+                </li>
+                <li class="menu-item" data-tab="reseller-leads">
+                    <a href="#"><i class="fa-solid fa-handshake"></i> Leads Reseller</a>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <a href="../index.html" class="btn-back-home"><i class="fa-solid fa-arrow-left"></i> Lihat Landingpage</a>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <header class="main-header">
+                <h2>Panel Kontrol Admin (Demo)</h2>
+                <div class="user-profile">
+                    <span class="user-avatar"><i class="fa-solid fa-user-tie"></i></span>
+                    <span class="user-name">Administrator</span>
+                </div>
+            </header>
+
+            <div class="dashboard-viewport">
+                <!-- Dashboard Statistics Tab -->
+                <div class="tab-panel active" id="tab-dashboard">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon p-color"><i class="fa-solid fa-users"></i></div>
+                            <div class="stat-info">
+                                <h3>Total Semua Leads</h3>
+                                <p id="count-total">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon q-color"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                            <div class="stat-info">
+                                <h3>Kuis Selesai</h3>
+                                <p id="count-quiz">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon n-color"><i class="fa-solid fa-envelope"></i></div>
+                            <div class="stat-info">
+                                <h3>Newsletter Sub</h3>
+                                <p id="count-news">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon r-color"><i class="fa-solid fa-handshake"></i></div>
+                            <div class="stat-info">
+                                <h3>Pengajuan Reseller</h3>
+                                <p id="count-reseller">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Graph / Overview Section -->
+                    <div class="dashboard-widgets">
+                        <div class="widget-card">
+                            <div class="widget-header">
+                                <h4>Jenis Kulit Terpopuler (Dari Quiz)</h4>
+                            </div>
+                            <div class="chart-mockup">
+                                <div class="chart-bar-wrapper">
+                                    <span class="bar-label">Berminyak</span>
+                                    <div class="bar-outer"><div class="bar-inner oily-bar" style="width: 0%"></div></div>
+                                    <span class="bar-val" id="val-oily">0%</span>
+                                </div>
+                                <div class="chart-bar-wrapper">
+                                    <span class="bar-label">Kering</span>
+                                    <div class="bar-outer"><div class="bar-inner dry-bar" style="width: 0%"></div></div>
+                                    <span class="bar-val" id="val-dry">0%</span>
+                                </div>
+                                <div class="chart-bar-wrapper">
+                                    <span class="bar-label">Sensitif</span>
+                                    <div class="bar-outer"><div class="bar-inner sensitive-bar" style="width: 0%"></div></div>
+                                    <span class="bar-val" id="val-sensitive">0%</span>
+                                </div>
+                                <div class="chart-bar-wrapper">
+                                    <span class="bar-label">Berjerawat</span>
+                                    <div class="bar-outer"><div class="bar-inner acne-bar" style="width: 0%"></div></div>
+                                    <span class="bar-val" id="val-acne">0%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="widget-card">
+                            <div class="widget-header">
+                                <h4>Panduan Aksi Cepat</h4>
+                            </div>
+                            <div class="action-card-content">
+                                <p style="font-size:14px; margin-bottom:15px; color:#5c5f62;">Gunakan panel admin simulasi ini untuk melihat data yang baru saja disubmit dari formulir-formulir di depan.</p>
+                                <div style="display:flex; flex-direction:column; gap:10px;">
+                                    <button class="btn btn-primary" id="btn-seed-mock-data"><i class="fa-solid fa-database"></i> Isi Data Contoh / Mock</button>
+                                    <button class="btn btn-outline" id="btn-clear-all-leads" style="color:var(--accent-red); border-color:var(--accent-red);"><i class="fa-solid fa-trash-can"></i> Hapus Semua Database</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Leads Skin Quiz Tab -->
+                <div class="tab-panel" id="tab-quiz-leads">
+                    <div class="table-actions-bar">
+                        <h3>Daftar Lead Kuis Kulit</h3>
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-outline btn-sm btn-export" data-target="quiz"><i class="fa-solid fa-file-excel"></i> Export CSV</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="leads-table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Nama</th>
+                                    <th>WhatsApp</th>
+                                    <th>Email</th>
+                                    <th>Jenis Kulit</th>
+                                    <th>Keluhan Utama</th>
+                                    <th>Target Skin</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-quiz-tbody">
+                                <tr>
+                                    <td colspan="8" style="text-align: center; color: #8d9296;">Belum ada data masuk.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Leads Newsletter Tab -->
+                <div class="tab-panel" id="tab-newsletter-leads">
+                    <div class="table-actions-bar">
+                        <h3>Daftar Lead Newsletter</h3>
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-outline btn-sm btn-export" data-target="newsletter"><i class="fa-solid fa-file-excel"></i> Export CSV</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="leads-table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Nama</th>
+                                    <th>Email</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-news-tbody">
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: #8d9296;">Belum ada data masuk.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Leads Reseller Tab -->
+                <div class="tab-panel" id="tab-reseller-leads">
+                    <div class="table-actions-bar">
+                        <h3>Daftar Pengajuan Reseller</h3>
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-outline btn-sm btn-export" data-target="reseller"><i class="fa-solid fa-file-excel"></i> Export CSV</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="leads-table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Nama</th>
+                                    <th>WhatsApp</th>
+                                    <th>Kota</th>
+                                    <th>Pesan / Motivasi</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-reseller-tbody">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: #8d9296;">Belum ada data masuk.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
