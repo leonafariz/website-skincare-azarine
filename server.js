@@ -17,6 +17,37 @@ app.use(cors());
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+// Health/diagnostic endpoint: reports which env vars the function can see
+// (booleans only, never values) and tests the Firestore connection.
+app.get('/api/health', async (req, res) => {
+    const envStatus = {};
+    [
+        'FIREBASE_PROJECT_ID',
+        'FIREBASE_CLIENT_EMAIL',
+        'FIREBASE_PRIVATE_KEY',
+        'VERTEXAI_PROJECT_ID',
+        'VERTEXAI_CLIENT_EMAIL',
+        'VERTEXAI_PRIVATE_KEY',
+        'ADMIN_EMAIL',
+    ].forEach(name => { envStatus[name] = Boolean(process.env[name]); });
+
+    let firestore = 'not tested';
+    try {
+        const { db } = require('./config/firebase');
+        await db.collection('products').limit(1).get();
+        firestore = 'connected';
+    } catch (err) {
+        firestore = `error: ${err.message}`;
+    }
+
+    res.json({
+        env: envStatus,
+        firestore,
+        nodeEnv: process.env.NODE_ENV || '(not set)',
+        vercelEnv: process.env.VERCEL_ENV || '(not on vercel)',
+    });
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/leads', leadsRoutes);
