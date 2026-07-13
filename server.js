@@ -1,7 +1,6 @@
 require('dotenv').config();
 
 const express = require('express');
-const session = require('express-session');
 const cors = require('cors');
 const path = require('path');
 
@@ -12,33 +11,38 @@ const productsRoutes = require('./routes/products');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const isProduction = process.env.NODE_ENV === 'production';
 
 // Middleware
 app.use(cors());
 app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Session middleware
-app.use(session({
-    secret: process.env.SESSION_SECRET || 'fallback-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: isProduction,  // true on Vercel (HTTPS), false on localhost
-        httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        sameSite: isProduction ? 'none' : 'lax',
-    },
-}));
-
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/leads', leadsRoutes);
 app.use('/api/products', productsRoutes);
 
+// 404 for unknown API routes (JSON instead of HTML)
+app.use('/api', (req, res) => {
+    res.status(404).json({ error: 'API route not found.' });
+});
+
 // Serve static files - Admin panel
 app.use('/admin', express.static(path.join(__dirname, 'admin')));
+
+// Fallback for admin SPA routes
+app.get(['/admin', '/admin/'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin', 'index.html'));
+});
+
+// Block backend source & config files from being served publicly
+const BLOCKED_PATHS = /^\/(config|routes|services|middleware|scripts|node_modules)(\/|$)|^\/(server\.js|package(-lock)?\.json|vercel\.json|\.env.*|.*\.md)$/i;
+app.use((req, res, next) => {
+    if (BLOCKED_PATHS.test(req.path)) {
+        return res.status(404).send('Not found');
+    }
+    next();
+});
 
 // Serve static files - Landing page (root)
 app.use(express.static(path.join(__dirname), {
@@ -46,12 +50,11 @@ app.use(express.static(path.join(__dirname), {
     extensions: ['html'],
 }));
 
-// Fallback for admin SPA routes
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin', 'index.html'));
-});
-app.get('/admin/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin', 'index.html'));
+// Error handler (multer upload errors, invalid JSON, etc.) — always respond JSON
+app.use((err, req, res, next) => {
+    console.error('Request error:', err.message);
+    const status = err.name === 'MulterError' || err.type === 'entity.too.large' ? 400 : (err.status || 500);
+    res.status(status).json({ error: err.message || 'Internal server error.' });
 });
 
 // REQUIRED for Vercel: export the app as a module

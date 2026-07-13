@@ -2,6 +2,16 @@
 
 let allProducts = [];
 
+// Escape values before injecting into innerHTML
+function esc(value) {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Mobile Menu
     const mobileMenuBtn = document.getElementById('mobile-menu-btn');
@@ -41,6 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     showToast(data.message);
                     document.getElementById('news-name').value = '';
                     document.getElementById('news-email').value = '';
+                } else {
+                    alert(data.error || 'Gagal mengirim. Coba lagi.');
                 }
             } catch (err) { console.error(err); alert('Gagal mengirim. Coba lagi.'); }
         });
@@ -67,6 +79,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.success) {
                     showToast(data.message);
                     ['res-name', 'res-phone', 'res-city', 'res-message'].forEach(id => document.getElementById(id).value = '');
+                } else {
+                    alert(data.error || 'Gagal mengirim. Coba lagi.');
                 }
             } catch (err) { console.error(err); alert('Gagal mengirim. Coba lagi.'); }
         });
@@ -102,15 +116,15 @@ function renderProducts(list) {
         card.setAttribute('data-id', product.id);
         card.innerHTML = `
             <div class="product-img-wrapper">
-                <span class="product-tag">${product.tag || product.category}</span>
-                <img src="${product.imageUrl || 'https://placehold.co/400x400/faf8f5/0b3d2c?text=No+Image'}" alt="${product.name}" class="product-img" loading="lazy">
+                <span class="product-tag">${esc(product.tag || product.category)}</span>
+                <img src="${esc(product.imageUrl || 'https://placehold.co/400x400/faf8f5/0b3d2c?text=No+Image')}" alt="${esc(product.name)}" class="product-img" loading="lazy">
             </div>
             <div class="product-info">
-                <div class="product-rating"><i class="fa-solid fa-star"></i><span>${product.rating || 0} (${product.reviewsCount || 0} Ulasan)</span></div>
-                <h3 class="product-name">${product.name}</h3>
-                <p class="product-desc">${product.desc || ''}</p>
+                <div class="product-rating"><i class="fa-solid fa-star"></i><span>${esc(product.rating || 0)} (${esc(product.reviewsCount || 0)} Ulasan)</span></div>
+                <h3 class="product-name">${esc(product.name)}</h3>
+                <p class="product-desc">${esc(product.desc || '')}</p>
                 <div class="product-bottom">
-                    <span class="product-price">${product.price}</span>
+                    <span class="product-price">${esc(product.price)}</span>
                     <button type="button" class="btn btn-outline btn-sm view-detail-btn" style="padding:8px 16px;font-size:13px;">Detail</button>
                 </div>
             </div>
@@ -321,7 +335,7 @@ function displayResults(analysis) {
     tipsList.innerHTML = '';
     (analysis.skincareTips || []).forEach(tip => {
         const li = document.createElement('li');
-        li.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${tip}`;
+        li.innerHTML = `<i class="fa-solid fa-check-circle"></i> ${esc(tip)}`;
         tipsList.appendChild(li);
     });
 
@@ -333,11 +347,11 @@ function displayResults(analysis) {
         const card = document.createElement('div');
         card.className = 'rec-product-card';
         card.innerHTML = `
-            <img src="${matchedProduct ? matchedProduct.imageUrl : 'https://placehold.co/80x80/faf8f5/0b3d2c?text=P'}" alt="${rec.productName}">
+            <img src="${esc(matchedProduct && matchedProduct.imageUrl ? matchedProduct.imageUrl : 'https://placehold.co/80x80/faf8f5/0b3d2c?text=P')}" alt="${esc(rec.productName)}">
             <div class="rec-product-info">
-                <h5>${rec.productName}</h5>
-                <p>${matchedProduct ? matchedProduct.price : ''}</p>
-                <span class="rec-reason">${rec.reason}</span>
+                <h5>${esc(rec.productName)}</h5>
+                <p>${esc(matchedProduct ? matchedProduct.price : '')}</p>
+                <span class="rec-reason">${esc(rec.reason)}</span>
             </div>
         `;
         prodsContainer.appendChild(card);
