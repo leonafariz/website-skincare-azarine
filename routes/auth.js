@@ -1,5 +1,5 @@
 const express = require('express');
-const { admin } = require('../config/firebase');
+const { auth } = require('../config/firebase');
 
 const router = express.Router();
 
@@ -14,8 +14,7 @@ router.post('/verify', async (req, res) => {
     }
 
     try {
-        // Verify the Firebase ID token server-side
-        const decoded = await admin.auth().verifyIdToken(idToken);
+        const decoded = await auth.verifyIdToken(idToken);
 
         if (decoded.email !== ADMIN_EMAIL) {
             return res.status(403).json({
@@ -23,7 +22,6 @@ router.post('/verify', async (req, res) => {
             });
         }
 
-        // Store user in session
         req.session.user = {
             email: decoded.email,
             name: decoded.name || decoded.email,
