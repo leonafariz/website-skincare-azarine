@@ -3,227 +3,227 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azarine Admin - Dashboard Leads & Analytics</title>
-    <!-- CSS styles specifically for dashboard -->
+    <title>Azarine Admin - Dashboard</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        // Redirect to add trailing slash if missing when accessed via HTTP/S (helps resolve relative CSS/JS paths)
-        if (window.location.protocol.startsWith('http') && window.location.pathname.endsWith('/admin')) {
-            window.location.pathname += '/';
-        }
-    </script>
 </head>
 <body>
 
-    <div class="app-layout">
+    <!-- Login Gate -->
+    <div class="login-gate" id="login-gate">
+        <div class="login-card">
+            <div class="login-logo">Azarine<span>.</span></div>
+            <h2>Admin Dashboard</h2>
+            <p>Masuk dengan akun Google yang diotorisasi untuk mengakses panel admin.</p>
+            <a href="/api/auth/google" class="btn-google-login" id="google-login-btn">
+                <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+                Login dengan Google
+            </a>
+            <p class="login-note">Hanya akun <strong>leonafariz01@gmail.com</strong> yang diizinkan.</p>
+        </div>
+    </div>
+
+    <!-- Main Admin Layout -->
+    <div class="admin-layout" id="admin-layout" style="display:none;">
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <a href="/" class="logo">Azarine<span>.</span>Admin</a>
+                <a href="../index.html" class="sidebar-logo">Azarine<span>.</span></a>
+                <span class="sidebar-tag">Admin</span>
             </div>
-            
             <ul class="sidebar-menu">
-                <li class="menu-item active" data-tab="dashboard">
-                    <a href="#"><i class="fa-solid fa-chart-line"></i> <span>Dashboard</span></a>
-                </li>
-                <li class="menu-item" data-tab="quiz-leads">
-                    <a href="#"><i class="fa-solid fa-wand-magic-sparkles"></i> <span>Leads Skin Quiz</span></a>
-                </li>
-                <li class="menu-item" data-tab="newsletter-leads">
-                    <a href="#"><i class="fa-solid fa-envelope"></i> <span>Leads Newsletter</span></a>
-                </li>
-                <li class="menu-item" data-tab="reseller-leads">
-                    <a href="#"><i class="fa-solid fa-handshake"></i> <span>Leads Reseller</span></a>
-                </li>
+                <li><a href="#" class="sidebar-link active" data-tab="tab-dashboard"><i class="fa-solid fa-chart-line"></i> <span>Dashboard</span></a></li>
+                <li><a href="#" class="sidebar-link" data-tab="tab-skin-leads"><i class="fa-solid fa-brain"></i> <span>Leads AI Analyzer</span></a></li>
+                <li><a href="#" class="sidebar-link" data-tab="tab-newsletter-leads"><i class="fa-solid fa-envelope"></i> <span>Leads Newsletter</span></a></li>
+                <li><a href="#" class="sidebar-link" data-tab="tab-reseller-leads"><i class="fa-solid fa-handshake"></i> <span>Leads Reseller</span></a></li>
+                <li><a href="#" class="sidebar-link" data-tab="tab-products"><i class="fa-solid fa-boxes-stacked"></i> <span>Kelola Produk</span></a></li>
             </ul>
-            
             <div class="sidebar-footer">
                 <a href="../index.html" class="btn-back-home"><i class="fa-solid fa-arrow-left"></i> <span>Lihat Landingpage</span></a>
             </div>
         </aside>
 
-        <!-- Main Workspace -->
+        <!-- Main Content -->
         <main class="main-content">
             <header class="main-header">
-                <h2>Panel Kontrol Admin (Demo)</h2>
-                <div class="user-profile">
-                    <span class="user-avatar"><i class="fa-solid fa-user-tie"></i></span>
-                    <span class="user-name">Administrator</span>
+                <h2 id="page-title">Dashboard</h2>
+                <div class="user-profile" id="user-profile">
+                    <img class="user-avatar-img" id="user-avatar" src="" alt="Admin">
+                    <span class="user-name" id="user-name">Admin</span>
+                    <button type="button" class="btn-logout" id="btn-logout" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
             </header>
 
             <div class="dashboard-viewport">
-                <!-- Dashboard Statistics Tab -->
+                <!-- Dashboard Tab -->
                 <div class="tab-panel active" id="tab-dashboard">
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-icon p-color"><i class="fa-solid fa-users"></i></div>
-                            <div class="stat-info">
-                                <h3>Total Semua Leads</h3>
-                                <p id="count-total">0</p>
-                            </div>
+                            <div class="stat-info"><h3>Total Leads</h3><p id="count-total">0</p></div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-icon q-color"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-                            <div class="stat-info">
-                                <h3>Kuis Selesai</h3>
-                                <p id="count-quiz">0</p>
-                            </div>
+                            <div class="stat-icon q-color"><i class="fa-solid fa-brain"></i></div>
+                            <div class="stat-info"><h3>AI Skin Analyzer</h3><p id="count-skin">0</p></div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon n-color"><i class="fa-solid fa-envelope"></i></div>
-                            <div class="stat-info">
-                                <h3>Newsletter Sub</h3>
-                                <p id="count-news">0</p>
-                            </div>
+                            <div class="stat-info"><h3>Newsletter</h3><p id="count-news">0</p></div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon r-color"><i class="fa-solid fa-handshake"></i></div>
-                            <div class="stat-info">
-                                <h3>Pengajuan Reseller</h3>
-                                <p id="count-reseller">0</p>
-                            </div>
+                            <div class="stat-info"><h3>Reseller</h3><p id="count-reseller">0</p></div>
                         </div>
                     </div>
-
-                    <!-- Graph / Overview Section -->
                     <div class="dashboard-widgets">
                         <div class="widget-card">
-                            <div class="widget-header">
-                                <h4>Jenis Kulit Terpopuler (Dari Quiz)</h4>
-                            </div>
+                            <div class="widget-header"><h4><i class="fa-solid fa-brain"></i> Jenis Kulit Terpopuler (AI Analyzer)</h4></div>
                             <div class="chart-mockup">
-                                <div class="chart-bar-wrapper">
-                                    <span class="bar-label">Berminyak</span>
-                                    <div class="bar-outer"><div class="bar-inner oily-bar" style="width: 0%"></div></div>
-                                    <span class="bar-val" id="val-oily">0%</span>
-                                </div>
-                                <div class="chart-bar-wrapper">
-                                    <span class="bar-label">Kering</span>
-                                    <div class="bar-outer"><div class="bar-inner dry-bar" style="width: 0%"></div></div>
-                                    <span class="bar-val" id="val-dry">0%</span>
-                                </div>
-                                <div class="chart-bar-wrapper">
-                                    <span class="bar-label">Sensitif</span>
-                                    <div class="bar-outer"><div class="bar-inner sensitive-bar" style="width: 0%"></div></div>
-                                    <span class="bar-val" id="val-sensitive">0%</span>
-                                </div>
-                                <div class="chart-bar-wrapper">
-                                    <span class="bar-label">Berjerawat</span>
-                                    <div class="bar-outer"><div class="bar-inner acne-bar" style="width: 0%"></div></div>
-                                    <span class="bar-val" id="val-acne">0%</span>
-                                </div>
+                                <div class="chart-bar-wrapper"><span class="bar-label">Berminyak</span><div class="bar-outer"><div class="bar-inner oily-bar" id="bar-oily" style="width:0%"></div></div><span class="bar-val" id="val-oily">0%</span></div>
+                                <div class="chart-bar-wrapper"><span class="bar-label">Kering</span><div class="bar-outer"><div class="bar-inner dry-bar" id="bar-dry" style="width:0%"></div></div><span class="bar-val" id="val-dry">0%</span></div>
+                                <div class="chart-bar-wrapper"><span class="bar-label">Kombinasi</span><div class="bar-outer"><div class="bar-inner combo-bar" id="bar-combo" style="width:0%"></div></div><span class="bar-val" id="val-combo">0%</span></div>
+                                <div class="chart-bar-wrapper"><span class="bar-label">Sensitif</span><div class="bar-outer"><div class="bar-inner sensitive-bar" id="bar-sensitive" style="width:0%"></div></div><span class="bar-val" id="val-sensitive">0%</span></div>
+                                <div class="chart-bar-wrapper"><span class="bar-label">Normal</span><div class="bar-outer"><div class="bar-inner normal-bar" id="bar-normal" style="width:0%"></div></div><span class="bar-val" id="val-normal">0%</span></div>
                             </div>
                         </div>
-
                         <div class="widget-card">
-                            <div class="widget-header">
-                                <h4>Panduan Aksi Cepat</h4>
-                            </div>
+                            <div class="widget-header"><h4><i class="fa-solid fa-boxes-stacked"></i> Produk di Katalog</h4></div>
                             <div class="action-card-content">
-                                <p style="font-size:14px; margin-bottom:15px; color:#5c5f62;">Gunakan panel admin simulasi ini untuk melihat data yang baru saja disubmit dari formulir-formulir di depan.</p>
-                                <div style="display:flex; flex-direction:column; gap:10px;">
-                                    <button class="btn btn-primary" id="btn-seed-mock-data"><i class="fa-solid fa-database"></i> Isi Data Contoh / Mock</button>
-                                    <button class="btn btn-outline" id="btn-clear-all-leads" style="color:var(--accent-red); border-color:var(--accent-red);"><i class="fa-solid fa-trash-can"></i> Hapus Semua Database</button>
-                                </div>
+                                <p class="widget-stat-big" id="product-count">0</p>
+                                <p style="font-size:14px;margin-bottom:20px;color:#5c5f62;">Produk aktif dalam katalog AI Knowledgebase.</p>
+                                <a href="#" class="btn btn-primary btn-sm" id="goto-products"><i class="fa-solid fa-arrow-right"></i> Kelola Produk</a>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Leads Skin Quiz Tab -->
-                <div class="tab-panel" id="tab-quiz-leads">
+                <!-- AI Skin Analyzer Leads Tab -->
+                <div class="tab-panel" id="tab-skin-leads">
                     <div class="table-actions-bar">
-                        <h3>Daftar Lead Kuis Kulit</h3>
+                        <h3><i class="fa-solid fa-brain"></i> Leads AI Skin Analyzer</h3>
                         <div class="action-buttons">
-                            <button type="button" class="btn btn-outline btn-sm btn-export" data-target="quiz"><i class="fa-solid fa-file-excel"></i> Export CSV</button>
+                            <button type="button" class="btn btn-outline btn-sm btn-export" data-target="skin"><i class="fa-solid fa-file-excel"></i> Export CSV</button>
                         </div>
                     </div>
-                    
                     <div class="table-container">
                         <table class="leads-table">
-                            <thead>
-                                <tr>
-                                    <th>Tanggal</th>
-                                    <th>Nama</th>
-                                    <th>WhatsApp</th>
-                                    <th>Email</th>
-                                    <th>Jenis Kulit</th>
-                                    <th>Keluhan Utama</th>
-                                    <th>Target Skin</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-quiz-tbody">
-                                <tr>
-                                    <td colspan="8" style="text-align: center; color: #8d9296;">Belum ada data masuk.</td>
-                                </tr>
-                            </tbody>
+                            <thead><tr><th>Tanggal</th><th>Nama</th><th>WhatsApp</th><th>Email</th><th>Jenis Kulit</th><th>Skor</th><th>Detail</th><th>Aksi</th></tr></thead>
+                            <tbody id="table-skin-tbody"><tr><td colspan="8" class="empty-msg">Memuat...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Leads Newsletter Tab -->
+                <!-- Newsletter Leads Tab -->
                 <div class="tab-panel" id="tab-newsletter-leads">
                     <div class="table-actions-bar">
-                        <h3>Daftar Lead Newsletter</h3>
+                        <h3><i class="fa-solid fa-envelope"></i> Leads Newsletter</h3>
                         <div class="action-buttons">
                             <button type="button" class="btn btn-outline btn-sm btn-export" data-target="newsletter"><i class="fa-solid fa-file-excel"></i> Export CSV</button>
                         </div>
                     </div>
-                    
                     <div class="table-container">
                         <table class="leads-table">
-                            <thead>
-                                <tr>
-                                    <th>Tanggal</th>
-                                    <th>Nama</th>
-                                    <th>Email</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-news-tbody">
-                                <tr>
-                                    <td colspan="4" style="text-align: center; color: #8d9296;">Belum ada data masuk.</td>
-                                </tr>
-                            </tbody>
+                            <thead><tr><th>Tanggal</th><th>Nama</th><th>Email</th><th>Aksi</th></tr></thead>
+                            <tbody id="table-news-tbody"><tr><td colspan="4" class="empty-msg">Memuat...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- Leads Reseller Tab -->
+                <!-- Reseller Leads Tab -->
                 <div class="tab-panel" id="tab-reseller-leads">
                     <div class="table-actions-bar">
-                        <h3>Daftar Pengajuan Reseller</h3>
+                        <h3><i class="fa-solid fa-handshake"></i> Pengajuan Reseller</h3>
                         <div class="action-buttons">
                             <button type="button" class="btn btn-outline btn-sm btn-export" data-target="reseller"><i class="fa-solid fa-file-excel"></i> Export CSV</button>
                         </div>
                     </div>
-                    
                     <div class="table-container">
                         <table class="leads-table">
-                            <thead>
-                                <tr>
-                                    <th>Tanggal</th>
-                                    <th>Nama</th>
-                                    <th>WhatsApp</th>
-                                    <th>Kota</th>
-                                    <th>Pesan / Motivasi</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-reseller-tbody">
-                                <tr>
-                                    <td colspan="6" style="text-align: center; color: #8d9296;">Belum ada data masuk.</td>
-                                </tr>
-                            </tbody>
+                            <thead><tr><th>Tanggal</th><th>Nama</th><th>WhatsApp</th><th>Kota</th><th>Pesan</th><th>Aksi</th></tr></thead>
+                            <tbody id="table-reseller-tbody"><tr><td colspan="6" class="empty-msg">Memuat...</td></tr></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Products Management Tab -->
+                <div class="tab-panel" id="tab-products">
+                    <div class="table-actions-bar">
+                        <h3><i class="fa-solid fa-boxes-stacked"></i> Kelola Produk Katalog</h3>
+                        <div class="action-buttons">
+                            <button type="button" class="btn btn-primary btn-sm" id="btn-add-product"><i class="fa-solid fa-plus"></i> Tambah Produk</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="leads-table">
+                            <thead><tr><th style="width:60px;">Foto</th><th>Nama Produk</th><th>Kategori</th><th>Harga</th><th>Rating</th><th>Jenis Kulit</th><th>Aksi</th></tr></thead>
+                            <tbody id="table-products-tbody"><tr><td colspan="7" class="empty-msg">Memuat...</td></tr></tbody>
                         </table>
                     </div>
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Skin Analysis Detail Modal -->
+    <div class="modal-overlay" id="skin-detail-modal">
+        <div class="modal-content modal-lg">
+            <button type="button" class="modal-close" onclick="document.getElementById('skin-detail-modal').classList.remove('active')">&times;</button>
+            <h3 style="margin-bottom:20px;"><i class="fa-solid fa-brain"></i> Detail Analisis AI</h3>
+            <div id="skin-detail-content"></div>
+        </div>
+    </div>
+
+    <!-- Product Form Modal -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal-content modal-lg">
+            <button type="button" class="modal-close" id="product-modal-close">&times;</button>
+            <h3 id="product-modal-title" style="margin-bottom:20px;"><i class="fa-solid fa-plus-circle"></i> Tambah Produk Baru</h3>
+            <form id="product-form">
+                <input type="hidden" id="prod-id">
+                <div class="form-row">
+                    <div class="form-group"><label for="prod-name">Nama Produk *</label><input type="text" id="prod-name" class="form-input" required></div>
+                    <div class="form-group"><label for="prod-category">Kategori *</label>
+                        <select id="prod-category" class="form-input" required>
+                            <option value="">Pilih Kategori</option>
+                            <option value="sunscreen">Sunscreen</option>
+                            <option value="serum">Serum</option>
+                            <option value="moisturizer">Moisturizer</option>
+                            <option value="acne">Acne Care</option>
+                            <option value="cleanser">Cleanser</option>
+                            <option value="toner">Toner</option>
+                            <option value="mask">Masker</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="prod-price">Harga *</label><input type="text" id="prod-price" class="form-input" placeholder="Rp 65.000" required></div>
+                    <div class="form-group"><label for="prod-tag">Tag / Label</label><input type="text" id="prod-tag" class="form-input" placeholder="Best Seller, Award Winner"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label for="prod-rating">Rating (0-5)</label><input type="number" id="prod-rating" class="form-input" min="0" max="5" step="0.1" value="4.5"></div>
+                    <div class="form-group"><label for="prod-reviews">Jumlah Ulasan</label><input type="number" id="prod-reviews" class="form-input" min="0" value="0"></div>
+                </div>
+                <div class="form-group"><label for="prod-image">URL Gambar Produk</label><input type="url" id="prod-image" class="form-input" placeholder="https://example.com/image.jpg"></div>
+                <div class="form-group">
+                    <label>Cocok untuk Jenis Kulit</label>
+                    <div class="checkbox-grid">
+                        <label class="cb-item"><input type="checkbox" value="oily"> Berminyak</label>
+                        <label class="cb-item"><input type="checkbox" value="dry"> Kering</label>
+                        <label class="cb-item"><input type="checkbox" value="sensitive"> Sensitif</label>
+                        <label class="cb-item"><input type="checkbox" value="acne"> Berjerawat</label>
+                        <label class="cb-item"><input type="checkbox" value="normal"> Normal</label>
+                        <label class="cb-item"><input type="checkbox" value="combination"> Kombinasi</label>
+                    </div>
+                </div>
+                <div class="form-group"><label for="prod-desc">Deskripsi Produk</label><textarea id="prod-desc" class="form-input" style="height:80px;resize:vertical;"></textarea></div>
+                <div class="form-group"><label for="prod-usage">Cara Pakai</label><textarea id="prod-usage" class="form-input" style="height:60px;resize:vertical;"></textarea></div>
+                <div class="form-group"><label for="prod-ingredients">Kandungan / Ingredients</label><textarea id="prod-ingredients" class="form-input" style="height:60px;resize:vertical;"></textarea></div>
+                <div style="display:flex;gap:12px;margin-top:16px;">
+                    <button type="button" class="btn btn-outline" id="product-cancel-btn">Batal</button>
+                    <button type="submit" class="btn btn-primary" style="flex:1;" id="product-save-btn"><i class="fa-solid fa-save"></i> Simpan Produk</button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script src="app.js"></script>
