@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "Azarine Cosmetic Landing Page with AI Skin Analyzer, Firestore backend, and Admin Dashboard",
   "main": "server.js",
+  "engines": {
+    "node": "22.x"
+  },
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
