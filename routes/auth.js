@@ -1,76 +1,53 @@
 const express = require('express');
-const { google } = require('googleapis');
-const { getOAuth2Client, getAuthUrl } = require('../config/auth');
+const { admin } = require('../config/firebase');
 
 const router = express.Router();
 
-// GET /api/auth/google - Redirect to Google consent screen
-router.get('/google', (req, res) => {
-    const url = getAuthUrl();
-    res.redirect(url);
-});
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'leonafariz01@gmail.com';
 
-// GET /api/auth/callback - Handle OAuth callback
-router.get('/callback', async (req, res) => {
-    const { code } = req.query;
+// POST /api/auth/verify - Verify Firebase ID token from frontend
+router.post('/verify', async (req, res) => {
+    const { idToken } = req.body;
 
-    if (!code) {
-        return res.status(400).send('Missing authorization code.');
+    if (!idToken) {
+        return res.status(400).json({ error: 'Missing ID token.' });
     }
 
     try {
-        const client = getOAuth2Client();
-        const { tokens } = await client.getToken(code);
-        client.setCredentials(tokens);
+        // Verify the Firebase ID token server-side
+        const decoded = await admin.auth().verifyIdToken(idToken);
 
-        // Get user info
-        const oauth2 = google.oauth2({ version: 'v2', auth: client });
-        const { data } = await oauth2.userinfo.get();
-
-        const allowedEmail = process.env.ADMIN_EMAIL || 'leonafariz01@gmail.com';
-
-        if (data.email !== allowedEmail) {
-            return res.status(403).send(`
-                <html><body style="font-family:Inter,sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;background:#fdfbf7;">
-                    <div style="text-align:center;max-width:400px;">
-                        <h2 style="color:#e76f51;">Akses Ditolak</h2>
-                        <p>Akun <strong>${data.email}</strong> tidak memiliki izin admin.</p>
-                        <p>Hanya <strong>${allowedEmail}</strong> yang diizinkan.</p>
-                        <a href="/" style="color:#0b3d2c;">Kembali ke Beranda</a>
-                    </div>
-                </body></html>
-            `);
+        if (decoded.email !== ADMIN_EMAIL) {
+            return res.status(403).json({
+                error: `Akses ditolak. Hanya akun ${ADMIN_EMAIL} yang diizinkan.`
+            });
         }
 
-        // Save session
+        // Store user in session
         req.session.user = {
-            email: data.email,
-            name: data.name,
-            picture: data.picture,
+            email: decoded.email,
+            name: decoded.name || decoded.email,
+            picture: decoded.picture || '',
         };
 
-        // Redirect to admin dashboard
-        res.redirect('/admin/');
-    } catch (error) {
-        console.error('OAuth callback error:', error);
-        res.status(500).send('Authentication failed. Please try again.');
+        res.json({ success: true, user: req.session.user });
+    } catch (err) {
+        console.error('Token verification failed:', err.message);
+        res.status(401).json({ error: 'Token tidak valid. Silakan login ulang.' });
     }
 });
 
 // GET /api/auth/me - Check current session
 router.get('/me', (req, res) => {
     if (req.session && req.session.user) {
-        return res.json({ authenticated: true, user: req.session.user });
+        return res.json({ user: req.session.user });
     }
-    return res.status(401).json({ authenticated: false });
+    res.status(401).json({ error: 'Not authenticated' });
 });
 
-// POST /api/auth/logout - Destroy session
+// POST /api/auth/logout - Clear session
 router.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Failed to logout.' });
-        }
+    req.session.destroy(() => {
         res.json({ success: true });
     });
 });

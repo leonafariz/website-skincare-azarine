@@ -1,4 +1,20 @@
-// Azarine Admin Dashboard — API-Driven Logic
+// Azarine Admin Dashboard — Firebase Auth + API-Driven Logic
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+
+// Firebase web config (public, safe to expose)
+const firebaseConfig = {
+    apiKey: "AIzaSyBlvCztAXiVmGx3wpTs20X0R6duS3Tu520",
+    authDomain: "azarine-b7762.firebaseapp.com",
+    projectId: "azarine-b7762",
+    storageBucket: "azarine-b7762.firebasestorage.app",
+    messagingSenderId: "708718117768",
+    appId: "1:708718117768:web:b2e99d2064e38f4124303d",
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const auth = getAuth(firebaseApp);
+const provider = new GoogleAuthProvider();
 
 let skinLeads = [];
 let newsLeads = [];
@@ -28,6 +44,40 @@ async function checkAuth() {
 function showLogin() {
     document.getElementById('login-gate').style.display = 'flex';
     document.getElementById('admin-layout').style.display = 'none';
+
+    // Bind Google Login button to Firebase signInWithPopup
+    const loginBtn = document.getElementById('google-login-btn');
+    if (loginBtn) {
+        loginBtn.onclick = async () => {
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Memproses...';
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const idToken = await result.user.getIdToken();
+
+                // Send ID token to backend to create a session
+                const res = await fetch('/api/auth/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idToken }),
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    showDashboard(data.user);
+                } else {
+                    alert(data.error || 'Akses ditolak.');
+                    await signOut(auth);
+                }
+            } catch (err) {
+                console.error('Login error:', err);
+                alert('Login gagal. Silakan coba lagi.');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 48 48">...</svg> Login dengan Google`;
+            }
+        };
+    }
 }
 
 function showDashboard(user) {
@@ -47,6 +97,7 @@ function showDashboard(user) {
     initProductModal();
     initExportButtons();
 }
+
 
 // --- Sidebar Navigation ---
 function initSidebar() {
@@ -90,9 +141,11 @@ function initLogout() {
     document.getElementById('btn-logout').addEventListener('click', async () => {
         try {
             await fetch('/api/auth/logout', { method: 'POST' });
+            await signOut(auth); // Also clear Firebase Auth state
             showLogin();
         } catch (err) {
             console.error('Logout failed:', err);
+            showLogin();
         }
     });
 }
